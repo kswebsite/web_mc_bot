@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KS BOT | Connection Panel</title>
+    <style>
+        body { background: #0a0a0a; color: #00e5ff; font-family: 'Segoe UI', Tahoma, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px; }
+        .panel { background: #111; border: 2px solid #00e5ff; padding: 25px; border-radius: 8px; box-shadow: 0 0 20px rgba(0, 229, 255, 0.2); width: 100%; max-width: 500px; }
+        h2 { margin-top: 0; text-transform: uppercase; letter-spacing: 2px; text-align: center; }
+        input { width: 95%; background: #1a1a1a; border: 1px solid #333; color: #fff; padding: 12px; margin: 10px 0; border-radius: 4px; outline: none; }
+        input:focus { border-color: #00e5ff; }
+        button { width: 100%; background: #00e5ff; color: #000; border: none; padding: 15px; font-weight: bold; cursor: pointer; border-radius: 4px; transition: 0.3s; margin-top: 10px; }
+        button:hover { background: #00b8cc; box-shadow: 0 0 15px #00e5ff; }
+        #logs { width: 100%; max-width: 500px; background: #000; color: #0f0; border: 1px solid #222; height: 300px; margin-top: 20px; padding: 15px; overflow-y: auto; font-family: 'Consolas', monospace; font-size: 13px; line-height: 1.5; border-radius: 4px; }
+        .system-msg { color: #888; }
+    </style>
+</head>
+<body>
+    <div class="panel">
+        <h2>KS Bot Controller</h2>
+        <input type="text" id="host" placeholder="Server IP (e.g. 127.0.0.1)">
+        <input type="number" id="port" placeholder="Port" value="25565">
+        <button onclick="startBot()">INITIATE JOIN</button>
+    </div>
+
+    <div id="logs">-- SYSTEM IDLE --<br></div>
+
+    <script>
+        async function startBot() {
+            const host = document.getElementById('host').value;
+            const port = document.getElementById('port').value;
+            const logDiv = document.getElementById('logs');
+            
+            if(!host) return alert("Please enter an IP!");
+
+            logDiv.innerHTML = `<span class="system-msg">[${new Date().toLocaleTimeString()}] Attempting connection to ${host}...</span><br>`;
+
+            try {
+                const response = await fetch(`/api/bot?host=${host}&port=${port}`);
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    
+                    const text = decoder.decode(value);
+                    logDiv.innerHTML += text.replace(/\n/g, '<br>');
+                    logDiv.scrollTop = logDiv.scrollHeight;
+                }
+            } catch (err) {
+                logDiv.innerHTML += `<br><span style="color:red">CONNECTION ERROR: ${err.message}</span>`;
+            }
+        }
+    </script>
+</body>
+</html>
