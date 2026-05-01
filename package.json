@@ -1,0 +1,15 @@
+{
+  "name": "ks-bot-vercel",
+  "version": "1.0.0",
+  "description": "Mineflayer bot with web logs on Vercel",
+  "main": "api/bot.js",
+  "dependencies": {
+    "mineflayer": "^4.20.0"
+  },
+  "scripts": {
+    "start": "node api/bot.js",
+    "dev": "vercel dev"
+  },
+  "author": "Md Abu Hassan Majumder",
+  "license": "MIT"
+}
